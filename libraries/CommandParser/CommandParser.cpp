@@ -20,7 +20,7 @@ bool CommandParser::put(char c)
   this->buf[this->len] = c == ' ' ? '\0' : c;
   this->len++;
 
-  return c == '\n';
+  return c == '\r';
 }
 
 char *CommandParser::command()
