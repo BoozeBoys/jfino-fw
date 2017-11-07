@@ -8,25 +8,25 @@ BTS7960B::BTS7960B()
 	memset(cur, 0, 2*sizeof(cur[0]));
 	memset(cur_cnt, 0, 2*sizeof(cur_cnt[0]));
 	memset(cur_sum, 0, 2*sizeof(cur_sum[0]));
-	
+
 	pinMode(ENABLE_PIN, OUTPUT);
-	
+
 	/* MOTOR DX */
 	pinMode(CUR_MOTOR_DX_PIN, INPUT);
-	
+
 	pinMode(PWM_MOTOR_DX_PIN, OUTPUT);
 	analogWrite(PWM_MOTOR_DX_PIN, 0);
-	
+
 	pinMode(DIR_MOTOR_DX_PIN, OUTPUT);
 	digitalWrite(DIR_MOTOR_DX_PIN, LOW);
 	/* MOTOR DX */
-	
+
 	/* MOTOR SX */
 	pinMode(CUR_MOTOR_SX_PIN, INPUT);
-	
+
 	pinMode(PWM_MOTOR_SX_PIN, OUTPUT);
 	analogWrite(PWM_MOTOR_SX_PIN, 0);
-	
+
 	pinMode(DIR_MOTOR_SX_PIN, OUTPUT);
 	digitalWrite(DIR_MOTOR_SX_PIN, LOW);
 	/* MOTOR SX */
@@ -50,7 +50,7 @@ bool BTS7960B::write(int motor, int speed)
 
 	int pwm_pin = -1;
 	int dir_pin = -1;
-	
+
 	switch(motor)
 	{
 		case MOTOR_DX:
@@ -68,7 +68,7 @@ bool BTS7960B::write(int motor, int speed)
 	}
 	if (pwm_pin == -1 || dir_pin == -1)
 		return false;
-	
+
 	if (speed >= 0)
 	{
 		analogWrite(pwm_pin, 255-abs(speed));

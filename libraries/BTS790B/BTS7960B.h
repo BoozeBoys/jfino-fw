@@ -27,11 +27,11 @@ class BTS7960B
 		void disable();
 
 		bool write(int motor, int speed);
-		
+
 		int read(int motor);
-		
+
 		void update();
-		
+
 	private:
 		unsigned long cur[2];
 		unsigned long cur_cnt[2];

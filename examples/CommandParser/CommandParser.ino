@@ -12,12 +12,12 @@ void loop() {
       continue;
     }
     Serial.println("comando trovato");
-    
+
     Serial.println(cp.command());
     for (int i = 1; i <= cp.argsN(); i++) {
       Serial.println(cp.arg(i));
     }
-      
+
     cp.reset();
   }
 }

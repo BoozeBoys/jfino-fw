@@ -27,7 +27,7 @@ void loop()
     int value = Serial.parseInt();
     Serial.print("SPD:");
     Serial.println(value);
-    
+
     if (!MM.write(MOTOR_DX, value))
       Serial.println("ERROR DX");
     if (!MM.write(MOTOR_SX, value))
