@@ -19,7 +19,7 @@ void loop() {
 
     if (strcmp(cmd, "POWER") == 0 && CP.argsN() == 1) {
       if (atoi(CP.arg(1)) != 0) {
-        MM.enable();       
+        MM.enable();
       } else {
         MM.disable();
       }
@@ -32,7 +32,7 @@ void loop() {
     } else {
       Serial.println("ERR");
     }
-    
+
     CP.reset();
   }
   // AGGIUNGO MOTORE

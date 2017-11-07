@@ -1,8 +1,6 @@
 #ifndef BTS7960B_H
 #define BTS7960B_H
 
-#include "arduino.h"
-
 #define CUR_LEN 100
 #define CUR_DX_LEN CUR_LEN
 #define CUR_SX_LEN CUR_LEN
@@ -29,11 +27,11 @@ class BTS7960B
 		void disable();
 
 		bool write(int motor, int speed);
-		
+
 		int read(int motor);
-		
+
 		void update();
-		
+
 	private:
 		unsigned long cur[2];
 		unsigned long cur_cnt[2];

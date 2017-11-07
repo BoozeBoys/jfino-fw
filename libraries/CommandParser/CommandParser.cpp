@@ -1,10 +1,10 @@
 #include <CommandParser.h>
 
-#include <arduino.h>
+#include <Arduino.h>
 
 CommandParser::CommandParser()
 {
-  reset();  
+  reset();
 }
 
 bool CommandParser::put(char c)
@@ -50,5 +50,5 @@ void CommandParser::reset()
 {
   memset(this->buf, 0, BUFSIZE);
   this->len = 0;
-  this->n_args = 0;  
+  this->n_args = 0;
 }
