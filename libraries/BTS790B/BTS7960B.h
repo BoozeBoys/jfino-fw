@@ -1,8 +1,6 @@
 #ifndef BTS7960B_H
 #define BTS7960B_H
 
-#include "Arduino.h"
-
 #define CUR_LEN 100
 #define CUR_DX_LEN CUR_LEN
 #define CUR_SX_LEN CUR_LEN

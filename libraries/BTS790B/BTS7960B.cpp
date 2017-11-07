@@ -1,4 +1,7 @@
+#include "Arduino.h"
+
 #include "BTS7960B.h"
+
 
 BTS7960B::BTS7960B()
 {
