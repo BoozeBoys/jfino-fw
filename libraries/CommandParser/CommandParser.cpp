@@ -1,6 +1,6 @@
 #include <CommandParser.h>
 
-#include <arduino.h>
+#include <Arduino.h>
 
 CommandParser::CommandParser()
 {
