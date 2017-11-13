@@ -23,18 +23,21 @@ void loop() {
       } else {
         MM.disable();
       }
+      Serial.println("OK\r");
     } else if (strcmp(cmd, "MOTOR") == 0 && CP.argsN() == 2) {
       int motorSX = atoi(CP.arg(1));
       int motorDX = atoi(CP.arg(2));
 
       MM.write(MOTOR_SX, motorSX);
       MM.write(MOTOR_DX, motorDX);
+
+      Serial.println("OK\r");
     } else {
-      Serial.println("ERR");
+      Serial.println("ERR\r");
     }
 
     CP.reset();
   }
-  // AGGIUNGO MOTORE
+
   MM.update();
 }
