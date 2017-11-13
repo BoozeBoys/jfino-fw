@@ -35,13 +35,11 @@ BTS7960B::BTS7960B()
 void BTS7960B::enable()
 {
 	digitalWrite(ENABLE_PIN, HIGH);
-	Serial.println("BTS7960B::enable()");
 }
 
 void BTS7960B::disable()
 {
 	digitalWrite(ENABLE_PIN, LOW);
-	Serial.println("BTS7960B::disable()");
 }
 
 bool BTS7960B::write(int motor, int speed)
@@ -79,7 +77,6 @@ bool BTS7960B::write(int motor, int speed)
 		analogWrite(pwm_pin, abs(speed));
 		digitalWrite(dir_pin, LOW);
 	}
-	Serial.print("BTS7960B::write() -> motor:"); Serial.print((motor==MOTOR_SX)?"MOTOR_SX":"MOTOR_DX"); Serial.print(" speed:"); Serial.println(abs(speed));
 	return true;
 }
 
@@ -89,12 +86,10 @@ int BTS7960B::read(int motor)
 	{
 		case MOTOR_DX:
 		{
-			Serial.print("BTS7960B::read() -> motor: MOTOR_DX "); Serial.print("curr:"); Serial.println(cur[MOTOR_DX]);
 			return cur[MOTOR_DX];
 		}
 		case MOTOR_SX:
 		{
-			Serial.print("BTS7960B::read() -> motor: MOTOR_SX "); Serial.print("curr:"); Serial.println(cur[MOTOR_SX]);
 			return cur[MOTOR_SX];
 		}
 	}
