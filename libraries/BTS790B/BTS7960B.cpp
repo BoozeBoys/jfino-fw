@@ -2,90 +2,70 @@
 
 #include "BTS7960B.h"
 
-BTS7960B::BTS7960B() {
-  memset(cur, 0, 2 * sizeof(cur[0]));
-  memset(cur_cnt, 0, 2 * sizeof(cur_cnt[0]));
-  memset(cur_sum, 0, 2 * sizeof(cur_sum[0]));
+Motor::Motor(int cur_pin, int pwm_pin, int dir_pin) {
+  pinMode(cur_pin, INPUT);
+  this->cur_pin = cur_pin;
 
-  pinMode(ENABLE_PIN, OUTPUT);
+  pinMode(pwm_pin, OUTPUT);
+  analogWrite(pwm_pin, 0);
+  this->pwm_pin = pwm_pin;
 
-  /* MOTOR DX */
-  pinMode(CUR_MOTOR_DX_PIN, INPUT);
-
-  pinMode(PWM_MOTOR_DX_PIN, OUTPUT);
-  analogWrite(PWM_MOTOR_DX_PIN, 0);
-
-  pinMode(DIR_MOTOR_DX_PIN, OUTPUT);
-  digitalWrite(DIR_MOTOR_DX_PIN, LOW);
-  /* MOTOR DX */
-
-  /* MOTOR SX */
-  pinMode(CUR_MOTOR_SX_PIN, INPUT);
-
-  pinMode(PWM_MOTOR_SX_PIN, OUTPUT);
-  analogWrite(PWM_MOTOR_SX_PIN, 0);
-
-  pinMode(DIR_MOTOR_SX_PIN, OUTPUT);
-  digitalWrite(DIR_MOTOR_SX_PIN, LOW);
-  /* MOTOR SX */
+  pinMode(dir_pin, OUTPUT);
+  digitalWrite(dir_pin, LOW);
+  this->dir_pin = dir_pin;
 }
 
-void BTS7960B::enable() { digitalWrite(ENABLE_PIN, HIGH); }
-
-void BTS7960B::disable() { digitalWrite(ENABLE_PIN, LOW); }
-
-bool BTS7960B::write(int motor, int speed) {
+void Motor::setSpeed(int speed) {
   speed = (speed > 255) ? 255 : (speed < -255) ? -255 : speed;
 
-  int pwm_pin = -1;
-  int dir_pin = -1;
-
-  switch (motor) {
-  case MOTOR_DX: {
-    pwm_pin = PWM_MOTOR_DX_PIN;
-    dir_pin = DIR_MOTOR_DX_PIN;
-    break;
-  }
-  case MOTOR_SX: {
-    pwm_pin = PWM_MOTOR_SX_PIN;
-    dir_pin = DIR_MOTOR_SX_PIN;
-    break;
-  }
-  }
-  if (pwm_pin == -1 || dir_pin == -1)
-    return false;
-
   if (speed >= 0) {
-    analogWrite(pwm_pin, 255 - abs(speed));
-    digitalWrite(dir_pin, HIGH);
+    analogWrite(this->pwm_pin, 255 - abs(speed));
+    digitalWrite(this->dir_pin, HIGH);
   } else {
-    analogWrite(pwm_pin, abs(speed));
-    digitalWrite(dir_pin, LOW);
+    analogWrite(this->pwm_pin, abs(speed));
+    digitalWrite(this->dir_pin, LOW);
   }
-  return true;
+  this->spd = speed;
 }
 
-int BTS7960B::read(int motor) {
-  switch (motor) {
-  case MOTOR_DX: {
-    return cur[MOTOR_DX];
+int Motor::speed() const { return this->spd; }
+
+void Motor::updateCurrent() {
+  cur_sum += analogRead(this->cur_pin);
+
+  if (cur_cnt++ > CUR_LEN) {
+    cur = cur_sum / cur_cnt;
+    cur_sum = cur_cnt = 0;
   }
-  case MOTOR_SX: {
-    return cur[MOTOR_SX];
-  }
-  }
-  return -1;
 }
+
+int Motor::current() const { return this->cur; }
+
+BTS7960B::BTS7960B()
+    : motors{Motor(CUR_MOTOR_SX_PIN, PWM_MOTOR_SX_PIN, DIR_MOTOR_SX_PIN),
+             Motor(CUR_MOTOR_DX_PIN, PWM_MOTOR_DX_PIN, DIR_MOTOR_DX_PIN)} {}
+
+void BTS7960B::setEnabled(bool enabled) {
+  digitalWrite(ENABLE_PIN, enabled);
+  this->enabled = enabled;
+}
+
+bool BTS7960B::isEnabled() const { return this->enabled; }
+
+void BTS7960B::setSpeed(int motor, int speed) {
+  if (motor >= MAX_MOTORS) {
+    return;
+  }
+
+  this->motors[motor].setSpeed(speed);
+}
+
+int BTS7960B::speed(int motor) const { return this->motors[motor].speed(); }
 
 void BTS7960B::update() {
-  cur_sum[MOTOR_DX] += analogRead(CUR_MOTOR_DX_PIN);
-  cur_sum[MOTOR_SX] += analogRead(CUR_MOTOR_SX_PIN);
-  if (cur_cnt[MOTOR_DX]++ > CUR_DX_LEN) {
-    cur[MOTOR_DX] = cur_sum[MOTOR_DX] / cur_cnt[MOTOR_DX];
-    cur_sum[MOTOR_DX] = cur_cnt[MOTOR_DX] = 0;
-  }
-  if (cur_cnt[MOTOR_SX]++ > CUR_SX_LEN) {
-    cur[MOTOR_SX] = cur_sum[MOTOR_SX] / cur_cnt[MOTOR_SX];
-    cur_sum[MOTOR_SX] = cur_cnt[MOTOR_SX] = 0;
+  for (int i = 0; i < MAX_MOTORS; i++) {
+    this->motors[i].updateCurrent();
   }
 }
+
+int BTS7960B::current(int motor) const { return this->motors[motor].current(); }

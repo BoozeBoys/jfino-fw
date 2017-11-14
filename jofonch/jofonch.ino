@@ -6,7 +6,6 @@ BTS7960B MM;
 
 void setup() {
   Serial.begin(115200);
-
 }
 
 void loop() {
@@ -18,22 +17,29 @@ void loop() {
     const char *cmd = CP.command();
 
     if (strcmp(cmd, "POWER") == 0 && CP.argsN() == 1) {
-      if (atoi(CP.arg(1)) != 0) {
-        MM.enable();
-      } else {
-        MM.disable();
-      }
-      Serial.println("OK\r");
+      MM.setEnabled(atoi(CP.arg(1)) != 0);
+      Serial.println("OK");
     } else if (strcmp(cmd, "MOTOR") == 0 && CP.argsN() == 2) {
       int motorSX = atoi(CP.arg(1));
       int motorDX = atoi(CP.arg(2));
 
-      MM.write(MOTOR_SX, motorSX);
-      MM.write(MOTOR_DX, motorDX);
+      MM.setSpeed(MOTOR_SX, motorSX);
+      MM.setSpeed(MOTOR_DX, motorDX);
 
-      Serial.println("OK\r");
+      Serial.println("OK");
+    } else if (strcmp(cmd, "STATUS") == 0) {
+      char buf[1024];
+
+      snprintf(buf, 1024, "POWER %d", MM.isEnabled());
+      Serial.println(buf);
+
+      for (int i = 0; i < MAX_MOTORS; i++) {
+        snprintf(buf, 1024, "MOTOR%d %d %d", i, MM.speed(i), MM.current(i));
+        Serial.println(buf);
+      }
+      Serial.println("OK");
     } else {
-      Serial.println("ERR\r");
+      Serial.println("ERR");
     }
 
     CP.reset();
