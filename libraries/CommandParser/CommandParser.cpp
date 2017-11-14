@@ -17,10 +17,15 @@ bool CommandParser::put(char c)
     this->n_args++;
   }
 
+  if ((this->len > 1) && (buf[this->len - 1] == '\r') && (c == '\n')) {
+    this->buf[this->len - 1] = '\0';
+    return true;
+  }
+
   this->buf[this->len] = c == ' ' ? '\0' : c;
   this->len++;
 
-  return c == '\r';
+  return false;
 }
 
 char *CommandParser::command()
