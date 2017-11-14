@@ -19,7 +19,7 @@ void loop() {
     if (strcmp(cmd, "POWER") == 0 && CP.argsN() == 1) {
       MM.setEnabled(atoi(CP.arg(1)) != 0);
       Serial.println("OK");
-    } else if (strcmp(cmd, "MOTOR") == 0 && CP.argsN() == 2) {
+    } else if (strcmp(cmd, "SPEED") == 0 && CP.argsN() == 2) {
       int motorSX = atoi(CP.arg(1));
       int motorDX = atoi(CP.arg(2));
 
