@@ -27,7 +27,7 @@ void loop() {
       MM.setSpeed(MOTOR_DX, motorDX);
 
       Serial.println("OK");
-    } else if (strcmp(cmd, "STATUS") == 0) {
+    } else if (strcmp(cmd, "STATUS") == 0 && CP.argsN() == 0) {
       char buf[1024];
 
       snprintf(buf, 1024, "POWER %d", MM.isEnabled());
