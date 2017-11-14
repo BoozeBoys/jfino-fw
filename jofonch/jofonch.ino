@@ -1,6 +1,8 @@
 #include <CommandParser.h>
 #include <BTS7960B.h>
 
+#define STATUS_LEN 100
+
 CommandParser CP;
 BTS7960B MM;
 
@@ -9,6 +11,8 @@ void setup() {
 }
 
 void loop() {
+  char status_buf[STATUS_LEN];
+
   while(Serial.available()) {
     if (!CP.put(Serial.read())) {
       break;
@@ -28,15 +32,17 @@ void loop() {
 
       Serial.println("OK");
     } else if (strcmp(cmd, "STATUS") == 0 && CP.argsN() == 0) {
-      char buf[1024];
-
-      snprintf(buf, 1024, "POWER %d", MM.isEnabled());
-      Serial.println(buf);
+      snprintf(status_buf, STATUS_LEN, "POWER %d", MM.isEnabled());
+      Serial.println(status_buf);
 
       for (int i = 0; i < MAX_MOTORS; i++) {
-        snprintf(buf, 1024, "MOTOR%d %d %d", i, MM.speed(i), MM.current(i));
-        Serial.println(buf);
+        snprintf(status_buf, STATUS_LEN, "SPEED %d %d", i, MM.speed(i));
+        Serial.println(status_buf);
+
+        snprintf(status_buf, STATUS_LEN, "CURRENT %d %d", i, MM.current(i));
+        Serial.println(status_buf);
       }
+
       Serial.println("OK");
     } else {
       Serial.println("ERR");
