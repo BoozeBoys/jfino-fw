@@ -25,6 +25,7 @@ void Motor::setSpeed(int speed) {
     analogWrite(this->pwm_pin, abs(speed));
     digitalWrite(this->dir_pin, LOW);
   }
+
   this->spd = speed;
 }
 
@@ -43,7 +44,9 @@ int Motor::current() const { return this->cur; }
 
 BTS7960B::BTS7960B()
     : motors{Motor(CUR_MOTOR_SX_PIN, PWM_MOTOR_SX_PIN, DIR_MOTOR_SX_PIN),
-             Motor(CUR_MOTOR_DX_PIN, PWM_MOTOR_DX_PIN, DIR_MOTOR_DX_PIN)} {}
+             Motor(CUR_MOTOR_DX_PIN, PWM_MOTOR_DX_PIN, DIR_MOTOR_DX_PIN)} {
+  pinMode(ENABLE_PIN, OUTPUT);
+}
 
 void BTS7960B::setEnabled(bool enabled) {
   digitalWrite(ENABLE_PIN, enabled);
