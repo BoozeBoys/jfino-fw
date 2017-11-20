@@ -2,11 +2,10 @@
 #define BTS7960B_H
 
 #define CUR_LEN 100
-#define CUR_DX_LEN CUR_LEN
-#define CUR_SX_LEN CUR_LEN
 
 #define MOTOR_SX 0
 #define MOTOR_DX 1
+#define MAX_MOTORS 2
 
 #define ENABLE_PIN 8
 
@@ -18,23 +17,43 @@
 #define DIR_MOTOR_SX_PIN 7
 #define CUR_MOTOR_SX_PIN A2
 
+class Motor {
+public:
+  Motor(int cur_pin, int pwm_pin, int dir_pin);
+
+  void setSpeed(int speed);
+  int speed() const;
+
+  void updateCurrent();
+  int current() const;
+
+private:
+  int cur_pin;
+  int pwm_pin;
+  int dir_pin;
+
+  int spd;
+  unsigned long cur;
+  unsigned long cur_cnt;
+  unsigned long cur_sum;
+};
+
 class BTS7960B {
 public:
   BTS7960B();
 
-  void enable();
-  void disable();
+  void setEnabled(bool enabled);
+  bool isEnabled() const;
 
-  bool write(int motor, int speed);
-
-  int read(int motor);
+  void setSpeed(int motor, int speed);
+  int speed(int motor) const;
 
   void update();
+  int current(int motor) const;
 
 private:
-  unsigned long cur[2];
-  unsigned long cur_cnt[2];
-  unsigned long cur_sum[2];
+  bool enabled;
+  struct Motor motors[MAX_MOTORS];
 };
 
 #endif

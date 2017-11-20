@@ -3,8 +3,7 @@
 
 #define BUFSIZE 100
 
-class CommandParser
-{
+class CommandParser {
 public:
   CommandParser();
 

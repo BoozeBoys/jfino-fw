@@ -2,13 +2,9 @@
 
 #include <Arduino.h>
 
-CommandParser::CommandParser()
-{
-  reset();
-}
+CommandParser::CommandParser() { reset(); }
 
-bool CommandParser::put(char c)
-{
+bool CommandParser::put(char c) {
   if ((this->len + 1) > BUFSIZE) {
     reset();
   }
@@ -17,28 +13,27 @@ bool CommandParser::put(char c)
     this->n_args++;
   }
 
+  if ((this->len > 1) && (buf[this->len - 1] == '\r') && (c == '\n')) {
+    this->buf[this->len - 1] = '\0';
+    return true;
+  }
+
   this->buf[this->len] = c == ' ' ? '\0' : c;
   this->len++;
 
-  return c == '\r';
+  return false;
 }
 
-char *CommandParser::command()
-{
-  return this->buf;
-}
+char *CommandParser::command() { return this->buf; }
 
-int CommandParser::argsN() const {
-  return this->n_args;
-}
+int CommandParser::argsN() const { return this->n_args; }
 
-char *CommandParser::arg(int n)
-{
-  for(int i = 0; i < this->len; i++) {
+char *CommandParser::arg(int n) {
+  for (int i = 0; i < this->len; i++) {
     if (this->buf[i] == '\0') {
       n--;
       if (n == 0) {
-        return &(this->buf[i+1]);
+        return &(this->buf[i + 1]);
       }
     }
   }
@@ -46,8 +41,7 @@ char *CommandParser::arg(int n)
   return NULL;
 }
 
-void CommandParser::reset()
-{
+void CommandParser::reset() {
   memset(this->buf, 0, BUFSIZE);
   this->len = 0;
   this->n_args = 0;
