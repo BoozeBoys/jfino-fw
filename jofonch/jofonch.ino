@@ -5,14 +5,13 @@
 
 CommandParser CP;
 BTS7960B MM;
+static char status_buf[STATUS_LEN];
 
 void setup() {
   Serial.begin(115200);
 }
 
 void loop() {
-  char status_buf[STATUS_LEN];
-
   while(Serial.available()) {
     if (!CP.put(Serial.read())) {
       break;
