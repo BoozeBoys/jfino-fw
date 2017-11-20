@@ -18,24 +18,23 @@
 #define DIR_MOTOR_SX_PIN 7
 #define CUR_MOTOR_SX_PIN A2
 
-class BTS7960B
-{
-	public:
-		BTS7960B();
+class BTS7960B {
+public:
+  BTS7960B();
 
-		void enable();
-		void disable();
+  void enable();
+  void disable();
 
-		bool write(int motor, int speed);
+  bool write(int motor, int speed);
 
-		int read(int motor);
+  int read(int motor);
 
-		void update();
+  void update();
 
-	private:
-		unsigned long cur[2];
-		unsigned long cur_cnt[2];
-		unsigned long cur_sum[2];
+private:
+  unsigned long cur[2];
+  unsigned long cur_cnt[2];
+  unsigned long cur_sum[2];
 };
 
 #endif
