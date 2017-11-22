@@ -9,6 +9,7 @@ static char status_buf[STATUS_LEN];
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("HELO");
 }
 
 void loop() {
