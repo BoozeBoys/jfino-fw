@@ -11,6 +11,7 @@ static unsigned long t0;
 
 void setup() {
   Serial.begin(115200);
+  Serial.println("HELO");
 }
 
 void loop() {
