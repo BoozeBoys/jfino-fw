@@ -2,10 +2,12 @@
 #include <BTS7960B.h>
 
 #define STATUS_LEN 100
+#define ALARM_TIMEOUT_MS 200
 
 CommandParser CP;
 BTS7960B MM;
 static char status_buf[STATUS_LEN];
+static unsigned long t0;
 
 void setup() {
   Serial.begin(115200);
@@ -16,6 +18,8 @@ void loop() {
     if (!CP.put(Serial.read())) {
       break;
     }
+
+    t0 = millis();
 
     const char *cmd = CP.command();
 
@@ -48,6 +52,11 @@ void loop() {
     }
 
     CP.reset();
+  }
+
+  if ((millis() - t0) > ALARM_TIMEOUT_MS) {
+    MM.setSpeed(MOTOR_SX, 0);
+    MM.setSpeed(MOTOR_DX, 0);
   }
 
   MM.update();
