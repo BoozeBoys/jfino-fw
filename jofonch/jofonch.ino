@@ -12,10 +12,7 @@ static unsigned long t0;
 
 #define MAX_ANCHORS 5
 
-byte *anchors[MAX_ANCHORS];
-
-#define CHECK_ADDR(a, b) (memcmp((a), (b).getByteShortAddress(), 2) == 0)
-#define CHECK_ZERO(a)    (memcmp((a), "\0\0", 2) == 0)
+uint16_t anchors[MAX_ANCHORS];
 
 // connection pins
 const uint8_t PIN_RST = 9; // reset pin
@@ -73,13 +70,13 @@ void loop() {
       }
 
       for (int i = 0; i < MAX_ANCHORS; i++) {
-        if (!CHECK_ZERO(anchors[i])) {
+        if (anchors[i] != 0) {
           Serial.print("ANCHOR "); 
           Serial.print(anchors[i], HEX);
           Serial.print(" ");
-          Serial.print(DW1000Ranging.searchDistantDevice(anchors[i])->getRange());
+          Serial.print(DW1000Ranging.searchDistantDevice((byte *)&anchors[i])->getRange());
           Serial.print(" ");
-          Serial.println(DW1000Ranging.searchDistantDevice(anchors[i])->getPower());
+          Serial.println(DW1000Ranging.searchDistantDevice((byte *)&anchors[i])->getRXPower());
         }
       }
 
@@ -100,23 +97,11 @@ void loop() {
   DW1000Ranging.loop();
 }
 
-/*
-void newRange() {
-  int idx = 0;//DW1000Ranging.getDistantDevice()->getShortAddress();
-  for (int idx = 0; idx < MAX_ANCHORS; idx ++) {
-    if (anchors[idx] == DW1000Ranging.getDistantDevice()->getShortAddress()) {
-      
-    }
-    anchors[idx].id = DW1000Ranging.getDistantDevice()->getShortAddress();
-    anchors[idx].range = DW1000Ranging.getDistantDevice()->getRange();
-    anchors[idx].power = DW1000Ranging.getDistantDevice()->getRXPower();
-  }
-}*/
 
 void addDevice(DW1000Device* device) {
   for (int i=0; i < MAX_ANCHORS; i++) {
-    if (CHECK_ZERO(anchors[i]) {
-      memcpy(anchors[i], device->getShortAddress(), 2);  
+    if (anchors[i] == 0) {
+      anchors[i] = device->getShortAddress();
       return;
     }
   }
@@ -124,8 +109,8 @@ void addDevice(DW1000Device* device) {
 
 void delDevice(DW1000Device* device) {
   for (int i=0; i < MAX_ANCHORS; i++) {
-    if (CHECK_ADDR(anchors[i], device)) {
-      memset(anchors[i], 0, 2);  
+    if (anchors[i] == device->getShortAddress()) {
+      anchors[i] = 0;
       return;
     }
   }
