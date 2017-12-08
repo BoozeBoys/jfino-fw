@@ -13,8 +13,13 @@
 #define SW_8 8
 #define SW_16 A1
 
+void newRange() {
+  SerialUSB.print("DEV ID: "); SerialUSB.print(DW1000Ranging.getDistantDevice()->getShortAddress(), HEX);
+  SerialUSB.print("\t RANGE: "); SerialUSB.print(DW1000Ranging.getDistantDevice()->getRange()); SerialUSB.print(" m");
+  SerialUSB.print("\t POWER: "); SerialUSB.print(DW1000Ranging.getDistantDevice()->getRXPower()); SerialUSB.println(" dBm");
+}
+
 void setup() {
-  while(!SerialUSB);
   SerialUSB.begin(115200);
   
   SerialUSB.println("Start configuration module...");
@@ -29,8 +34,9 @@ void setup() {
   pinMode(SW_8, INPUT_PULLUP);
   pinMode(SW_16, INPUT_PULLUP);
 
-  DW1000Ranging.initCommunication(WB_RST, WB_SS, WB_IRQ);
-  DW1000Ranging.startAsTag("82:17:5B:D5:A9:9A:E2:9C", DW1000.MODE_LONGDATA_RANGE_ACCURACY);
+  DW1000Ranging.initCommunication(&SerialUSB, &SPI1, WB_RST, WB_SS, WB_IRQ);
+  DW1000Ranging.attachNewRange(newRange);
+  DW1000Ranging.startAsTag("82:17:5B:D5:A9:9A:E2:9D", DW1000.MODE_LONGDATA_RANGE_ACCURACY);
 
   SerialUSB.println("");
   SerialUSB.println("Init done...");
