@@ -23,7 +23,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("HELO");
   //init the configuration
-  DW1000Ranging.initCommunication(PIN_RST, PIN_SS, PIN_IRQ); //Reset, CS, IRQ pin
+  DW1000Ranging.initCommunication(&Serial, &SPI, PIN_RST, PIN_SS, PIN_IRQ); //Reset, CS, IRQ pin
   //define the sketch as anchor. It will be great to dynamically change the type of module
   //DW1000Ranging.attachNewRange(newRange);
   DW1000Ranging.attachBlinkDevice(addDevice);
@@ -32,7 +32,7 @@ void setup() {
   //DW1000Ranging.useRangeFilter(true);
   
   //we start the module as an anchor
-  DW1000Ranging.startAsAnchor("82:17:5B:D5:A9:9A:E2:9C", DW1000.MODE_LONGDATA_RANGE_ACCURACY);
+  DW1000Ranging.startAsAnchor("82:17:5B:D5:A9:9A:E2:9A", DW1000.MODE_LONGDATA_RANGE_ACCURACY);
 }
 
 
