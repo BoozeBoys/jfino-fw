@@ -30,6 +30,7 @@
 #include "DW1000Time.h"
 #include "DW1000Device.h" 
 #include "DW1000Mac.h"
+#include <SPI.h>
 
 // messages used in the ranging protocol
 #define POLL 0
@@ -73,7 +74,7 @@ public:
 	static byte data[LEN_DATA];
 	
 	//initialisation
-	static void    initCommunication(uint8_t myRST = DEFAULT_RST_PIN, uint8_t mySS = DEFAULT_SPI_SS_PIN, uint8_t myIRQ = 2);
+	static void    initCommunication(Stream *ser, SPIClass *spi, uint8_t myRST = DEFAULT_RST_PIN, uint8_t mySS = DEFAULT_SPI_SS_PIN, uint8_t myIRQ = 2);
 	static void    configureNetwork(uint16_t deviceAddress, uint16_t networkId, const byte mode[]);
 	static void    generalStart();
 	static void    startAsAnchor(char address[], const byte mode[], const bool randomShortAddress = true);
@@ -168,6 +169,8 @@ private:
 	static int16_t _bias_PRF_16[17]; // TODO remove or use
 	//17 bytes in SRAM
 	static char  _bias_PRF_64[17]; // TODO remove or use
+
+	static Stream *_dbgser;
 	
 	
 	//methods

@@ -285,12 +285,12 @@ boolean DW1000Time::operator!=(const DW1000Time& cmp) const {
  * @deprecated use SerialUSB.print(object)
  */
 void DW1000Time::print() {
-	SerialUSB.print(*this);
-	SerialUSB.println();
+	Serial.print(*this);
+	Serial.println();
 }
 
 /**
- * Print timestamp of instance as integer with e.g. SerialUSB.print()
+ * Print timestamp of instance as integer with e.g. Serial.print()
  * @param p printer instance
  * @return size of printed chars
  */

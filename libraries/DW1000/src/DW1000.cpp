@@ -106,13 +106,14 @@ const byte DW1000Class::BIAS_900_64[] = {147, 133, 117, 99, 75, 50, 29, 0, 24, 4
 #endif
 const SPISettings DW1000Class::_slowSPI = SPISettings(2000000L, MSBFIRST, SPI_MODE0);
 const SPISettings* DW1000Class::_currentSPI = &_fastSPI;
+SPIClass * DW1000Class::_spi = &SPI;
 
 /* ###########################################################################
  * #### Init and end #######################################################
  * ######################################################################### */
 
 void DW1000Class::end() {
-	SPI1.end();
+	_spi->end();
 }
 
 void DW1000Class::select(uint8_t ss) {
@@ -161,15 +162,16 @@ void DW1000Class::reselect(uint8_t ss) {
 	digitalWrite(_ss, HIGH);
 }
 
-void DW1000Class::begin(uint8_t irq, uint8_t rst) {
+void DW1000Class::begin(SPIClass *spi, uint8_t irq, uint8_t rst) {
 	// generous initial init/wake-up-idle delay
 	delay(5);
+	_spi = spi;
 	// Configure the IRQ pin as INPUT. Required for correct interrupt setting for ESP8266
     	pinMode(irq, INPUT);
 	// start SPI
-	SPI1.begin();
+	_spi->begin();
 #ifndef ESP8266
-	SPI1.usingInterrupt(digitalPinToInterrupt(irq)); // not every board support this, e.g. ESP8266
+	_spi->usingInterrupt(digitalPinToInterrupt(irq)); // not every board support this, e.g. ESP8266
 #endif
 	// pin and basic member setup
 	_rst        = rst;
@@ -1639,17 +1641,17 @@ void DW1000Class::readBytes(byte cmd, uint16_t offset, byte data[], uint16_t n) 
 			headerLen += 2;
 		}
 	}
-	SPI1.beginTransaction(*_currentSPI);
+	_spi->beginTransaction(*_currentSPI);
 	digitalWrite(_ss, LOW);
 	for(i = 0; i < headerLen; i++) {
-		SPI1.transfer(header[i]); // send header
+		_spi->transfer(header[i]); // send header
 	}
 	for(i = 0; i < n; i++) {
-		data[i] = SPI1.transfer(JUNK); // read values
+		data[i] = _spi->transfer(JUNK); // read values
 	}
 	delayMicroseconds(5);
 	digitalWrite(_ss, HIGH);
-	SPI1.endTransaction();
+	_spi->endTransaction();
 }
 
 // always 4 bytes
@@ -1711,17 +1713,17 @@ void DW1000Class::writeBytes(byte cmd, uint16_t offset, byte data[], uint16_t da
 			headerLen += 2;
 		}
 	}
-	SPI1.beginTransaction(*_currentSPI);
+	_spi->beginTransaction(*_currentSPI);
 	digitalWrite(_ss, LOW);
 	for(i = 0; i < headerLen; i++) {
-		SPI1.transfer(header[i]); // send header
+		_spi->transfer(header[i]); // send header
 	}
 	for(i = 0; i < data_size; i++) {
-		SPI1.transfer(data[i]); // write values
+		_spi->transfer(data[i]); // write values
 	}
 	delayMicroseconds(5);
 	digitalWrite(_ss, HIGH);
-	SPI1.endTransaction();
+	_spi->endTransaction();
 }
 
 

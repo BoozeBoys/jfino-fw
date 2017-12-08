@@ -19,7 +19,7 @@
  * for the Decawave DW1000 UWB transceiver IC.
  *
  * @TODO
- * - remove or debugmode for SerialUSB.print
+ * - remove or debugmode for _dbgser->print
  * - move strings to flash to reduce ram usage
  * - do not safe duplicate of pin settings
  * - maybe other object structure
@@ -85,11 +85,13 @@ void (* DW1000RangingClass::_handleBlinkDevice)(DW1000Device*) = 0;
 void (* DW1000RangingClass::_handleNewDevice)(DW1000Device*) = 0;
 void (* DW1000RangingClass::_handleInactiveDevice)(DW1000Device*) = 0;
 
+Stream * DW1000RangingClass::_dbgser = &Serial;
+
 /* ###########################################################################
  * #### Init and end #######################################################
  * ######################################################################### */
 
-void DW1000RangingClass::initCommunication(uint8_t myRST, uint8_t mySS, uint8_t myIRQ) {
+void DW1000RangingClass::initCommunication(Stream *ser, SPIClass *spi, uint8_t myRST, uint8_t mySS, uint8_t myIRQ) {
 	// reset line to the chip
 	_RST              = myRST;
 	_SS               = mySS;
@@ -98,9 +100,10 @@ void DW1000RangingClass::initCommunication(uint8_t myRST, uint8_t mySS, uint8_t 
 	_replyDelayTimeUS = DEFAULT_REPLY_DELAY_TIME;
 	//we set our timer delay
 	_timerDelay       = DEFAULT_TIMER_DELAY;
+	_dbgser = ser;
 	
 	
-	DW1000.begin(myIRQ, myRST);
+	DW1000.begin(spi, myIRQ, myRST);
 	DW1000.select(mySS);
 }
 
@@ -125,30 +128,30 @@ void DW1000RangingClass::generalStart() {
 	
 	if(DEBUG) {
 		// DEBUG monitoring
-		SerialUSB.println("DW1000-arduino");
+		_dbgser->println("DW1000-arduino");
 		// initialize the driver
 		
 		
-		SerialUSB.println("configuration..");
+		_dbgser->println("configuration..");
 		// DEBUG chip info and registers pretty printed
 		char msg[90];
 		DW1000.getPrintableDeviceIdentifier(msg);
-		SerialUSB.print("Device ID: ");
-		SerialUSB.println(msg);
+		_dbgser->print("Device ID: ");
+		_dbgser->println(msg);
 		DW1000.getPrintableExtendedUniqueIdentifier(msg);
-		SerialUSB.print("Unique ID: ");
-		SerialUSB.print(msg);
+		_dbgser->print("Unique ID: ");
+		_dbgser->print(msg);
 		char string[6];
 		sprintf(string, "%02X:%02X", _currentShortAddress[0], _currentShortAddress[1]);
-		SerialUSB.print(" short: ");
-		SerialUSB.println(string);
+		_dbgser->print(" short: ");
+		_dbgser->println(string);
 		
 		DW1000.getPrintableNetworkIdAndShortAddress(msg);
-		SerialUSB.print("Network ID & Device Address: ");
-		SerialUSB.println(msg);
+		_dbgser->print("Network ID & Device Address: ");
+		_dbgser->println(msg);
 		DW1000.getPrintableDeviceMode(msg);
-		SerialUSB.print("Device mode: ");
-		SerialUSB.println(msg);
+		_dbgser->print("Device mode: ");
+		_dbgser->println(msg);
 	}
 	
 	
@@ -164,8 +167,8 @@ void DW1000RangingClass::startAsAnchor(char address[], const byte mode[], const 
 	DW1000.convertToByte(address, _currentAddress);
 	//write the address on the DW1000 chip
 	DW1000.setEUI(address);
-	SerialUSB.print("device address: ");
-	SerialUSB.println(address);
+	_dbgser->print("device address: ");
+	_dbgser->println(address);
 	if (randomShortAddress) {
 		//we need to define a random short address:
 		randomSeed(analogRead(0));
@@ -188,7 +191,7 @@ void DW1000RangingClass::startAsAnchor(char address[], const byte mode[], const 
 	//defined type as anchor
 	_type = ANCHOR;
 	
-	SerialUSB.println("### ANCHOR ###");
+	_dbgser->println("### ANCHOR ###");
 	
 }
 
@@ -197,8 +200,8 @@ void DW1000RangingClass::startAsTag(char address[], const byte mode[], const boo
 	DW1000.convertToByte(address, _currentAddress);
 	//write the address on the DW1000 chip
 	DW1000.setEUI(address);
-	SerialUSB.print("device address: ");
-	SerialUSB.println(address);
+	_dbgser->print("device address: ");
+	_dbgser->println(address);
 	if (randomShortAddress) {
 		//we need to define a random short address:
 		randomSeed(analogRead(0));
@@ -219,7 +222,7 @@ void DW1000RangingClass::startAsTag(char address[], const byte mode[], const boo
 	//defined type as tag
 	_type = TAG;
 	
-	SerialUSB.println("### TAG ###");
+	_dbgser->println("### TAG ###");
 }
 
 boolean DW1000RangingClass::addNetworkDevices(DW1000Device* device, boolean shortAddress) {
@@ -491,13 +494,13 @@ void DW1000RangingClass::loop() {
 			
 			
 			if((_networkDevicesNumber != 0) && (myDistantDevice == NULL)) {
-				SerialUSB.println("Not found");
+				_dbgser->println("Not found");
 				//we don't have the short address of the device in memory
 				/*
-				SerialUSB.print("unknown: ");
-				SerialUSB.print(address[0], HEX);
-				SerialUSB.print(":");
-				SerialUSB.println(address[1], HEX);
+				_dbgser->print("unknown: ");
+				_dbgser->print(address[0], HEX);
+				_dbgser->print(":");
+				_dbgser->println(address[1], HEX);
 				*/
 				return;
 			}
@@ -939,21 +942,21 @@ void DW1000RangingClass::computeRangeAsymmetric(DW1000Device* myDistantDevice, D
 	
 	myTOF->setTimestamp((round1*round2-reply1*reply2)/(round1+round2+reply1+reply2));
 	/*
-	SerialUSB.print("timePollAckReceived ");myDistantDevice->timePollAckReceived.print();
-	SerialUSB.print("timePollSent ");myDistantDevice->timePollSent.print();
-	SerialUSB.print("round1 "); SerialUSB.println((long)round1.getTimestamp());
+	_dbgser->print("timePollAckReceived ");myDistantDevice->timePollAckReceived.print();
+	_dbgser->print("timePollSent ");myDistantDevice->timePollSent.print();
+	_dbgser->print("round1 "); _dbgser->println((long)round1.getTimestamp());
 	
-	SerialUSB.print("timePollAckSent ");myDistantDevice->timePollAckSent.print();
-	SerialUSB.print("timePollReceived ");myDistantDevice->timePollReceived.print();
-	SerialUSB.print("reply1 "); SerialUSB.println((long)reply1.getTimestamp());
+	_dbgser->print("timePollAckSent ");myDistantDevice->timePollAckSent.print();
+	_dbgser->print("timePollReceived ");myDistantDevice->timePollReceived.print();
+	_dbgser->print("reply1 "); _dbgser->println((long)reply1.getTimestamp());
 	
-	SerialUSB.print("timeRangeReceived ");myDistantDevice->timeRangeReceived.print();
-	SerialUSB.print("timePollAckSent ");myDistantDevice->timePollAckSent.print();
-	SerialUSB.print("round2 "); SerialUSB.println((long)round2.getTimestamp());
+	_dbgser->print("timeRangeReceived ");myDistantDevice->timeRangeReceived.print();
+	_dbgser->print("timePollAckSent ");myDistantDevice->timePollAckSent.print();
+	_dbgser->print("round2 "); _dbgser->println((long)round2.getTimestamp());
 	
-	SerialUSB.print("timeRangeSent ");myDistantDevice->timeRangeSent.print();
-	SerialUSB.print("timePollAckReceived ");myDistantDevice->timePollAckReceived.print();
-	SerialUSB.print("reply2 "); SerialUSB.println((long)reply2.getTimestamp());
+	_dbgser->print("timeRangeSent ");myDistantDevice->timeRangeSent.print();
+	_dbgser->print("timePollAckReceived ");myDistantDevice->timePollAckReceived.print();
+	_dbgser->print("reply2 "); _dbgser->println((long)reply2.getTimestamp());
 	 */
 }
 
@@ -963,7 +966,7 @@ void DW1000RangingClass::visualizeDatas(byte datas[]) {
 	char string[60];
 	sprintf(string, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
 					datas[0], datas[1], datas[2], datas[3], datas[4], datas[5], datas[6], datas[7], datas[8], datas[9], datas[10], datas[11], datas[12], datas[13], datas[14], datas[15]);
-	SerialUSB.println(string);
+	_dbgser->println(string);
 }
 
 

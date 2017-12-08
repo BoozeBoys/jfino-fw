@@ -46,7 +46,7 @@ public:
 	@param[in] irq The interrupt line/pin that connects the Arduino.
 	@param[in] rst The reset line/pin for hard resets of ICs that connect to the Arduino. Value 0xff means soft reset.
 	*/
-	static void begin(uint8_t irq, uint8_t rst = 0xff);
+	static void begin(SPIClass *spi, uint8_t irq, uint8_t rst = 0xff);
 	
 	/** 
 	Selects a specific DW1000 chip for communication. In case of a single DW1000 chip in use
@@ -417,6 +417,7 @@ public:
 	static uint8_t _ss;
 	static uint8_t _rst;
 	static uint8_t _irq;
+
 	
 	/* callbacks. */
 	static void (* _handleError)(void);
@@ -554,6 +555,8 @@ public:
 	static const SPISettings _fastSPI;
 	static const SPISettings _slowSPI;
 	static const SPISettings* _currentSPI;
+	static SPIClass* _spi;
+
 	
 	/* range bias tables (500/900 MHz band, 16/64 MHz PRF), -61 to -95 dBm. */
 	static const byte BIAS_500_16_ZERO = 10;

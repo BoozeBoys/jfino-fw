@@ -14,7 +14,8 @@ const uint8_t PIN_IRQ = 2; // irq pin
 const uint8_t PIN_SS = SS; // spi select pin
 
 void setup() {
-  Serial.begin(115200);
+  while(!SerialUSB);
+  SerialUSB.begin(115200);
   delay(1000);
   //init the configuration
   DW1000Ranging.initCommunication(PIN_RST, PIN_SS, PIN_IRQ); //Reset, CS, IRQ pin
@@ -34,19 +35,19 @@ void loop() {
 }
 
 void newRange() {
-  Serial.print("from: "); Serial.print(DW1000Ranging.getDistantDevice()->getShortAddress(), HEX);
-  Serial.print("\t Range: "); Serial.print(DW1000Ranging.getDistantDevice()->getRange()); Serial.print(" m");
-  Serial.print("\t RX power: "); Serial.print(DW1000Ranging.getDistantDevice()->getRXPower()); Serial.println(" dBm");
+  SerialUSB.print("from: "); SerialUSB.print(DW1000Ranging.getDistantDevice()->getShortAddress(), HEX);
+  SerialUSB.print("\t Range: "); SerialUSB.print(DW1000Ranging.getDistantDevice()->getRange()); SerialUSB.print(" m");
+  SerialUSB.print("\t RX power: "); SerialUSB.print(DW1000Ranging.getDistantDevice()->getRXPower()); SerialUSB.println(" dBm");
 }
 
 void newDevice(DW1000Device* device) {
-  Serial.print("ranging init; 1 device added ! -> ");
-  Serial.print(" short:");
-  Serial.println(device->getShortAddress(), HEX);
+  SerialUSB.print("ranging init; 1 device added ! -> ");
+  SerialUSB.print(" short:");
+  SerialUSB.println(device->getShortAddress(), HEX);
 }
 
 void inactiveDevice(DW1000Device* device) {
-  Serial.print("delete inactive device: ");
-  Serial.println(device->getShortAddress(), HEX);
+  SerialUSB.print("delete inactive device: ");
+  SerialUSB.println(device->getShortAddress(), HEX);
 }
 
