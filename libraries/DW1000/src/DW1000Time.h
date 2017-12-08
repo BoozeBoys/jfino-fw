@@ -129,9 +129,9 @@ public:
 
 #ifdef DW1000TIME_H_PRINTABLE
 	// print to serial for debug
-	DEPRECATED_MSG("use Serial.print(object)")
+	DEPRECATED_MSG("use SerialUSB.print(object)")
 	void print();
-	// for usage with e.g. Serial.print()
+	// for usage with e.g. SerialUSB.print()
 	size_t printTo(Print& p) const;
 #endif // DW1000Time_H_PRINTABLE
 	

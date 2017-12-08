@@ -19,7 +19,7 @@
  * for the Decawave DW1000 UWB transceiver IC.
  *
  * @TODO
- * - remove or debugmode for Serial.print
+ * - remove or debugmode for SerialUSB.print
  * - move strings to flash to reduce ram usage
  * - do not safe duplicate of pin settings
  * - maybe other object structure
@@ -63,9 +63,7 @@
 #define DEFAULT_TIMER_DELAY 80
 
 //debug mode
-#ifndef DEBUG
 #define DEBUG true
-#endif
 
 
 class DW1000RangingClass {

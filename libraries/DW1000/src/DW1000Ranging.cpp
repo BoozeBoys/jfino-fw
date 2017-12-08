@@ -19,7 +19,7 @@
  * for the Decawave DW1000 UWB transceiver IC.
  *
  * @TODO
- * - remove or debugmode for Serial.print
+ * - remove or debugmode for SerialUSB.print
  * - move strings to flash to reduce ram usage
  * - do not safe duplicate of pin settings
  * - maybe other object structure
@@ -125,30 +125,30 @@ void DW1000RangingClass::generalStart() {
 	
 	if(DEBUG) {
 		// DEBUG monitoring
-		Serial.println("DW1000-arduino");
+		SerialUSB.println("DW1000-arduino");
 		// initialize the driver
 		
 		
-		Serial.println("configuration..");
+		SerialUSB.println("configuration..");
 		// DEBUG chip info and registers pretty printed
 		char msg[90];
 		DW1000.getPrintableDeviceIdentifier(msg);
-		Serial.print("Device ID: ");
-		Serial.println(msg);
+		SerialUSB.print("Device ID: ");
+		SerialUSB.println(msg);
 		DW1000.getPrintableExtendedUniqueIdentifier(msg);
-		Serial.print("Unique ID: ");
-		Serial.print(msg);
+		SerialUSB.print("Unique ID: ");
+		SerialUSB.print(msg);
 		char string[6];
 		sprintf(string, "%02X:%02X", _currentShortAddress[0], _currentShortAddress[1]);
-		Serial.print(" short: ");
-		Serial.println(string);
+		SerialUSB.print(" short: ");
+		SerialUSB.println(string);
 		
 		DW1000.getPrintableNetworkIdAndShortAddress(msg);
-		Serial.print("Network ID & Device Address: ");
-		Serial.println(msg);
+		SerialUSB.print("Network ID & Device Address: ");
+		SerialUSB.println(msg);
 		DW1000.getPrintableDeviceMode(msg);
-		Serial.print("Device mode: ");
-		Serial.println(msg);
+		SerialUSB.print("Device mode: ");
+		SerialUSB.println(msg);
 	}
 	
 	
@@ -164,8 +164,8 @@ void DW1000RangingClass::startAsAnchor(char address[], const byte mode[], const 
 	DW1000.convertToByte(address, _currentAddress);
 	//write the address on the DW1000 chip
 	DW1000.setEUI(address);
-	Serial.print("device address: ");
-	Serial.println(address);
+	SerialUSB.print("device address: ");
+	SerialUSB.println(address);
 	if (randomShortAddress) {
 		//we need to define a random short address:
 		randomSeed(analogRead(0));
@@ -188,7 +188,7 @@ void DW1000RangingClass::startAsAnchor(char address[], const byte mode[], const 
 	//defined type as anchor
 	_type = ANCHOR;
 	
-	Serial.println("### ANCHOR ###");
+	SerialUSB.println("### ANCHOR ###");
 	
 }
 
@@ -197,8 +197,8 @@ void DW1000RangingClass::startAsTag(char address[], const byte mode[], const boo
 	DW1000.convertToByte(address, _currentAddress);
 	//write the address on the DW1000 chip
 	DW1000.setEUI(address);
-	Serial.print("device address: ");
-	Serial.println(address);
+	SerialUSB.print("device address: ");
+	SerialUSB.println(address);
 	if (randomShortAddress) {
 		//we need to define a random short address:
 		randomSeed(analogRead(0));
@@ -219,7 +219,7 @@ void DW1000RangingClass::startAsTag(char address[], const byte mode[], const boo
 	//defined type as tag
 	_type = TAG;
 	
-	Serial.println("### TAG ###");
+	SerialUSB.println("### TAG ###");
 }
 
 boolean DW1000RangingClass::addNetworkDevices(DW1000Device* device, boolean shortAddress) {
@@ -491,13 +491,13 @@ void DW1000RangingClass::loop() {
 			
 			
 			if((_networkDevicesNumber != 0) && (myDistantDevice == NULL)) {
-				Serial.println("Not found");
+				SerialUSB.println("Not found");
 				//we don't have the short address of the device in memory
 				/*
-				Serial.print("unknown: ");
-				Serial.print(address[0], HEX);
-				Serial.print(":");
-				Serial.println(address[1], HEX);
+				SerialUSB.print("unknown: ");
+				SerialUSB.print(address[0], HEX);
+				SerialUSB.print(":");
+				SerialUSB.println(address[1], HEX);
 				*/
 				return;
 			}
@@ -939,21 +939,21 @@ void DW1000RangingClass::computeRangeAsymmetric(DW1000Device* myDistantDevice, D
 	
 	myTOF->setTimestamp((round1*round2-reply1*reply2)/(round1+round2+reply1+reply2));
 	/*
-	Serial.print("timePollAckReceived ");myDistantDevice->timePollAckReceived.print();
-	Serial.print("timePollSent ");myDistantDevice->timePollSent.print();
-	Serial.print("round1 "); Serial.println((long)round1.getTimestamp());
+	SerialUSB.print("timePollAckReceived ");myDistantDevice->timePollAckReceived.print();
+	SerialUSB.print("timePollSent ");myDistantDevice->timePollSent.print();
+	SerialUSB.print("round1 "); SerialUSB.println((long)round1.getTimestamp());
 	
-	Serial.print("timePollAckSent ");myDistantDevice->timePollAckSent.print();
-	Serial.print("timePollReceived ");myDistantDevice->timePollReceived.print();
-	Serial.print("reply1 "); Serial.println((long)reply1.getTimestamp());
+	SerialUSB.print("timePollAckSent ");myDistantDevice->timePollAckSent.print();
+	SerialUSB.print("timePollReceived ");myDistantDevice->timePollReceived.print();
+	SerialUSB.print("reply1 "); SerialUSB.println((long)reply1.getTimestamp());
 	
-	Serial.print("timeRangeReceived ");myDistantDevice->timeRangeReceived.print();
-	Serial.print("timePollAckSent ");myDistantDevice->timePollAckSent.print();
-	Serial.print("round2 "); Serial.println((long)round2.getTimestamp());
+	SerialUSB.print("timeRangeReceived ");myDistantDevice->timeRangeReceived.print();
+	SerialUSB.print("timePollAckSent ");myDistantDevice->timePollAckSent.print();
+	SerialUSB.print("round2 "); SerialUSB.println((long)round2.getTimestamp());
 	
-	Serial.print("timeRangeSent ");myDistantDevice->timeRangeSent.print();
-	Serial.print("timePollAckReceived ");myDistantDevice->timePollAckReceived.print();
-	Serial.print("reply2 "); Serial.println((long)reply2.getTimestamp());
+	SerialUSB.print("timeRangeSent ");myDistantDevice->timeRangeSent.print();
+	SerialUSB.print("timePollAckReceived ");myDistantDevice->timePollAckReceived.print();
+	SerialUSB.print("reply2 "); SerialUSB.println((long)reply2.getTimestamp());
 	 */
 }
 
@@ -963,7 +963,7 @@ void DW1000RangingClass::visualizeDatas(byte datas[]) {
 	char string[60];
 	sprintf(string, "%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X",
 					datas[0], datas[1], datas[2], datas[3], datas[4], datas[5], datas[6], datas[7], datas[8], datas[9], datas[10], datas[11], datas[12], datas[13], datas[14], datas[15]);
-	Serial.println(string);
+	SerialUSB.println(string);
 }
 
 

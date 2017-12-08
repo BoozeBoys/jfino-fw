@@ -112,7 +112,7 @@ const SPISettings* DW1000Class::_currentSPI = &_fastSPI;
  * ######################################################################### */
 
 void DW1000Class::end() {
-	SPI.end();
+	SPI1.end();
 }
 
 void DW1000Class::select(uint8_t ss) {
@@ -167,9 +167,9 @@ void DW1000Class::begin(uint8_t irq, uint8_t rst) {
 	// Configure the IRQ pin as INPUT. Required for correct interrupt setting for ESP8266
     	pinMode(irq, INPUT);
 	// start SPI
-	SPI.begin();
+	SPI1.begin();
 #ifndef ESP8266
-	SPI.usingInterrupt(digitalPinToInterrupt(irq)); // not every board support this, e.g. ESP8266
+	SPI1.usingInterrupt(digitalPinToInterrupt(irq)); // not every board support this, e.g. ESP8266
 #endif
 	// pin and basic member setup
 	_rst        = rst;
@@ -1639,17 +1639,17 @@ void DW1000Class::readBytes(byte cmd, uint16_t offset, byte data[], uint16_t n) 
 			headerLen += 2;
 		}
 	}
-	SPI.beginTransaction(*_currentSPI);
+	SPI1.beginTransaction(*_currentSPI);
 	digitalWrite(_ss, LOW);
 	for(i = 0; i < headerLen; i++) {
-		SPI.transfer(header[i]); // send header
+		SPI1.transfer(header[i]); // send header
 	}
 	for(i = 0; i < n; i++) {
-		data[i] = SPI.transfer(JUNK); // read values
+		data[i] = SPI1.transfer(JUNK); // read values
 	}
 	delayMicroseconds(5);
 	digitalWrite(_ss, HIGH);
-	SPI.endTransaction();
+	SPI1.endTransaction();
 }
 
 // always 4 bytes
@@ -1711,17 +1711,17 @@ void DW1000Class::writeBytes(byte cmd, uint16_t offset, byte data[], uint16_t da
 			headerLen += 2;
 		}
 	}
-	SPI.beginTransaction(*_currentSPI);
+	SPI1.beginTransaction(*_currentSPI);
 	digitalWrite(_ss, LOW);
 	for(i = 0; i < headerLen; i++) {
-		SPI.transfer(header[i]); // send header
+		SPI1.transfer(header[i]); // send header
 	}
 	for(i = 0; i < data_size; i++) {
-		SPI.transfer(data[i]); // write values
+		SPI1.transfer(data[i]); // write values
 	}
 	delayMicroseconds(5);
 	digitalWrite(_ss, HIGH);
-	SPI.endTransaction();
+	SPI1.endTransaction();
 }
 
 

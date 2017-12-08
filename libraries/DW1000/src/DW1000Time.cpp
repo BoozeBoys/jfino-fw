@@ -282,15 +282,15 @@ boolean DW1000Time::operator!=(const DW1000Time& cmp) const {
 #ifdef DW1000TIME_H_PRINTABLE
 /**
  * For debuging, print timestamp pretty as integer with arduinos serial
- * @deprecated use Serial.print(object)
+ * @deprecated use SerialUSB.print(object)
  */
 void DW1000Time::print() {
-	Serial.print(*this);
-	Serial.println();
+	SerialUSB.print(*this);
+	SerialUSB.println();
 }
 
 /**
- * Print timestamp of instance as integer with e.g. Serial.print()
+ * Print timestamp of instance as integer with e.g. SerialUSB.print()
  * @param p printer instance
  * @return size of printed chars
  */
