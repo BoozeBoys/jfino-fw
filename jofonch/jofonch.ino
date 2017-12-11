@@ -2,15 +2,13 @@
 #include <BTS7960B.h>
 #include <DW1000Ranging.h>
 
-#define STATUS_LEN 100
 #define ALARM_TIMEOUT_MS 200
 
 CommandParser CP;
 BTS7960B MM;
-static char status_buf[STATUS_LEN];
 static unsigned long t0;
 
-#define MAX_ANCHORS 5
+#define MAX_ANCHORS 4
 
 uint16_t anchors[MAX_ANCHORS];
 
@@ -19,9 +17,13 @@ const uint8_t PIN_RST = 9; // reset pin
 const uint8_t PIN_IRQ = 2; // irq pin
 const uint8_t PIN_SS = SS; // spi select pin
 
+#define ENABLE_DW1000 0
+
 void setup() {
   Serial.begin(115200);
   Serial.println("HELO");
+
+ #if ENABLE_DW1000
   //init the configuration
   DW1000Ranging.initCommunication(&Serial, &SPI, PIN_RST, PIN_SS, PIN_IRQ); //Reset, CS, IRQ pin
   //define the sketch as anchor. It will be great to dynamically change the type of module
@@ -33,6 +35,7 @@ void setup() {
   
   //we start the module as an tag
   DW1000Ranging.startAsTag("00:01:02:03:04:05:06:07", DW1000.MODE_LONGDATA_RANGE_ACCURACY, false);
+ #endif
 }
 
 
@@ -58,15 +61,11 @@ void loop() {
 
       Serial.println("OK");
     } else if (strcmp(cmd, "STATUS") == 0 && CP.argsN() == 0) {
-      snprintf(status_buf, STATUS_LEN, "POWER %d", MM.isEnabled());
-      Serial.println(status_buf);
-
+      Serial.print("POWER "); Serial.println(MM.isEnabled());
+      
       for (int i = 0; i < MAX_MOTORS; i++) {
-        snprintf(status_buf, STATUS_LEN, "SPEED %d %d", i, MM.speed(i));
-        Serial.println(status_buf);
-
-        snprintf(status_buf, STATUS_LEN, "CURRENT %d %d", i, MM.current(i));
-        Serial.println(status_buf);
+        Serial.print("SPEED "); Serial.print(i); Serial.print(" "); Serial.println(MM.speed(i));
+        Serial.print("CURRENT "); Serial.print(i); Serial.print(" "); Serial.println(MM.current(i));
       }
 
       for (int i = 0; i < MAX_ANCHORS; i++) {
@@ -94,9 +93,13 @@ void loop() {
   }
 
   MM.update();
+#if ENABLE_DW1000
   DW1000Ranging.loop();
+#endif
 }
 
+
+#if ENABLE_DW1000
 
 void addDevice(DW1000Device* device) {
   for (int i=0; i < MAX_ANCHORS; i++) {
@@ -116,3 +119,4 @@ void delDevice(DW1000Device* device) {
   }
 }
 
+#endif
