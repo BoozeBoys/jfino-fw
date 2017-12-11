@@ -26,13 +26,13 @@ void setup() {
   DW1000Ranging.initCommunication(&Serial, &SPI, PIN_RST, PIN_SS, PIN_IRQ); //Reset, CS, IRQ pin
   //define the sketch as anchor. It will be great to dynamically change the type of module
   //DW1000Ranging.attachNewRange(newRange);
-  DW1000Ranging.attachBlinkDevice(addDevice);
+  DW1000Ranging.attachNewDevice(addDevice);
   DW1000Ranging.attachInactiveDevice(delDevice);
   //Enable the filter to smooth the distance
   //DW1000Ranging.useRangeFilter(true);
   
-  //we start the module as an anchor
-  DW1000Ranging.startAsAnchor("82:17:5B:D5:A9:9A:E2:9A", DW1000.MODE_LONGDATA_RANGE_ACCURACY);
+  //we start the module as an tag
+  DW1000Ranging.startAsTag("00:01:02:03:04:05:06:07", DW1000.MODE_LONGDATA_RANGE_ACCURACY, false);
 }
 
 

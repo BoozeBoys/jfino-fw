@@ -34,14 +34,6 @@ void setup() {
   pinMode(SW_8, INPUT_PULLUP);
   pinMode(SW_16, INPUT_PULLUP);
 
-  DW1000Ranging.initCommunication(&SerialUSB, &SPI1, WB_RST, WB_SS, WB_IRQ);
-  DW1000Ranging.attachNewRange(newRange);
-  DW1000Ranging.startAsTag("82:17:5B:D5:A9:9A:E2:9D", DW1000.MODE_LONGDATA_RANGE_ACCURACY);
-
-  SerialUSB.println("");
-  SerialUSB.println("Init done...");
-  SerialUSB.println("");
-
   // TEST ADDRESS SWITCH
   uint8_t val = 0;
   val += !digitalRead(SW_1) << 0;
@@ -49,7 +41,15 @@ void setup() {
   val += !digitalRead(SW_4) << 2;
   val += !digitalRead(SW_8) << 3;
   val += !digitalRead(SW_16) << 4;
-  SerialUSB.print("ADDRESS: 0x");  SerialUSB.println(val, HEX);
+
+  DW1000Ranging.initCommunication(&SerialUSB, &SPI1, WB_RST, WB_SS, WB_IRQ);
+  //DW1000Ranging.attachNewRange(newRange);
+  char addr_buf[32];
+  sprintf(addr_buf, "%02X:00:11:22:33:44:55:66", val);
+  DW1000Ranging.startAsAnchor(addr_buf, DW1000.MODE_LONGDATA_RANGE_ACCURACY, false);
+
+  SerialUSB.println("");
+  SerialUSB.println("Init done...");
   SerialUSB.println("");
 }
 
