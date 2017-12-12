@@ -8,24 +8,37 @@ CommandParser CP;
 BTS7960B MM;
 static unsigned long t0;
 
-#define MAX_ANCHORS 4
+#ifdef __AVR_ATmega328P__
+  // Arduino uno, duemilanove, etc...
+  #define ENABLE_DW1000 0
+  // connection pins
+  const uint8_t PIN_RST = 9; // reset pin
+  const uint8_t PIN_IRQ = 2; // irq pin
+  const uint8_t PIN_SS = SS; // spi select pin
+  #define SERIALPORT Serial
+  #define SPIPORT SPI
+  #define MAX_ANCHORS 4
+#else
+  // Arduino M0: jfino
+  #define ENABLE_DW1000 1
+  // connection pins
+  const uint8_t PIN_RST = 9; // reset pin
+  const uint8_t PIN_IRQ = 3; // irq pin
+  const uint8_t PIN_SS = 10; // spi select pin
+  #define SERIALPORT SerialUSB
+  #define SPIPORT SPI1
+  #define MAX_ANCHORS 32
+#endif
 
 uint16_t anchors[MAX_ANCHORS];
 
-// connection pins
-const uint8_t PIN_RST = 9; // reset pin
-const uint8_t PIN_IRQ = 2; // irq pin
-const uint8_t PIN_SS = SS; // spi select pin
-
-#define ENABLE_DW1000 0
-
 void setup() {
-  Serial.begin(115200);
-  Serial.println("HELO");
+  SERIALPORT.begin(115200);
+  SERIALPORT.println("HELO");
 
  #if ENABLE_DW1000
   //init the configuration
-  DW1000Ranging.initCommunication(&Serial, &SPI, PIN_RST, PIN_SS, PIN_IRQ); //Reset, CS, IRQ pin
+  DW1000Ranging.initCommunication(&SERIALPORT, &SPIPORT, PIN_RST, PIN_SS, PIN_IRQ); //Reset, CS, IRQ pin
   //define the sketch as anchor. It will be great to dynamically change the type of module
   //DW1000Ranging.attachNewRange(newRange);
   DW1000Ranging.attachNewDevice(addDevice);
@@ -40,8 +53,8 @@ void setup() {
 
 
 void loop() {
-  while(Serial.available()) {
-    if (!CP.put(Serial.read())) {
+  while(SERIALPORT.available()) {
+    if (!CP.put(SERIALPORT.read())) {
       break;
     }
 
@@ -51,7 +64,7 @@ void loop() {
 
     if (strcmp(cmd, "POWER") == 0 && CP.argsN() == 1) {
       MM.setEnabled(atoi(CP.arg(1)) != 0);
-      Serial.println("OK");
+      SERIALPORT.println("OK");
     } else if (strcmp(cmd, "SPEED") == 0 && CP.argsN() == 2) {
       int motorSX = atoi(CP.arg(1));
       int motorDX = atoi(CP.arg(2));
@@ -59,29 +72,29 @@ void loop() {
       MM.setSpeed(MOTOR_SX, motorSX);
       MM.setSpeed(MOTOR_DX, motorDX);
 
-      Serial.println("OK");
+      SERIALPORT.println("OK");
     } else if (strcmp(cmd, "STATUS") == 0 && CP.argsN() == 0) {
-      Serial.print("POWER "); Serial.println(MM.isEnabled());
+      SERIALPORT.print("POWER "); SERIALPORT.println(MM.isEnabled());
       
       for (int i = 0; i < MAX_MOTORS; i++) {
-        Serial.print("SPEED "); Serial.print(i); Serial.print(" "); Serial.println(MM.speed(i));
-        Serial.print("CURRENT "); Serial.print(i); Serial.print(" "); Serial.println(MM.current(i));
+        SERIALPORT.print("SPEED "); SERIALPORT.print(i); SERIALPORT.print(" "); SERIALPORT.println(MM.speed(i));
+        SERIALPORT.print("CURRENT "); SERIALPORT.print(i); SERIALPORT.print(" "); SERIALPORT.println(MM.current(i));
       }
 
       for (int i = 0; i < MAX_ANCHORS; i++) {
         if (anchors[i] != 0) {
-          Serial.print("ANCHOR "); 
-          Serial.print(anchors[i], HEX);
-          Serial.print(" ");
-          Serial.print(DW1000Ranging.searchDistantDevice((byte *)&anchors[i])->getRange());
-          Serial.print(" ");
-          Serial.println(DW1000Ranging.searchDistantDevice((byte *)&anchors[i])->getRXPower());
+          SERIALPORT.print("ANCHOR "); 
+          SERIALPORT.print(anchors[i], HEX);
+          SERIALPORT.print(" ");
+          SERIALPORT.print(DW1000Ranging.searchDistantDevice((byte *)&anchors[i])->getRange());
+          SERIALPORT.print(" ");
+          SERIALPORT.println(DW1000Ranging.searchDistantDevice((byte *)&anchors[i])->getRXPower());
         }
       }
 
-      Serial.println("OK");
+      SERIALPORT.println("OK");
     } else {
-      Serial.println("ERR");
+      SERIALPORT.println("ERR");
     }
 
     CP.reset();
