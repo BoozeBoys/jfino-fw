@@ -1,7 +1,7 @@
 #ifndef COMMAND_PARSER_H
 #define COMMAND_PARSER_H
 
-#define BUFSIZE 100
+#define BUFSIZE 16
 
 class CommandParser {
 public:
