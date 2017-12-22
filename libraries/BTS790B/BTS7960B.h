@@ -7,15 +7,15 @@
 #define MOTOR_DX 1
 #define MAX_MOTORS 2
 
-#define ENABLE_PIN 8
+#define ENABLE_PIN 0 //8
 
-#define PWM_MOTOR_DX_PIN 5
-#define DIR_MOTOR_DX_PIN 4
-#define CUR_MOTOR_DX_PIN A1
+#define PWM_MOTOR_DX_PIN 20 //5
+#define DIR_MOTOR_DX_PIN 18 //4
+#define CUR_MOTOR_DX_PIN 0 //A1
 
-#define PWM_MOTOR_SX_PIN 6
-#define DIR_MOTOR_SX_PIN 7
-#define CUR_MOTOR_SX_PIN A2
+#define PWM_MOTOR_SX_PIN 21 //6
+#define DIR_MOTOR_SX_PIN 48 //7
+#define CUR_MOTOR_SX_PIN 0 //A2
 
 class Motor {
 public:

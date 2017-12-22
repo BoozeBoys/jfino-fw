@@ -1,20 +1,23 @@
-Installare in arduino il supporto per le board "ZERO".
+Installare in arduino il supporto per le board "ZERO"
 
 
 
-Copiare la cartella "jfino-variant" 
-sotto "C:\Users\<tuo nome utente>\AppData\Local\Arduino15\packages\arduino\hardware\samd\1.6.17\variants\"
-sotto "/Users/<tuo nome utente>/Library/Arduino15/packages/arduino/hardware/samd/1.6.17/variants/"
-rinominandola solo "jfino".
+Copiare la cartella "jfino-variant" sotto
+    "C:\Users\<tuo nome utente>\AppData\Local\Arduino15\packages\arduino\hardware\samd\1.6.17\variants\"
+oppure sotto
+    "/Users/<tuo nome utente>/Library/Arduino15/packages/arduino/hardware/samd/1.6.17/variants/"
+rinominandola solo 
+    "jfino"
 
 
 
 Aggiungere il seguente testo al file
-"C:\Users\<tuo nome utente>\AppData\Local\Arduino15\packages\arduino\hardware\samd\1.6.17\boards.txt"
-"/Users/<tuo nome utente>/Library/Arduino15/packages/arduino/hardware/samd/1.6.17/boards.txt"
+    "C:\Users\<tuo nome utente>\AppData\Local\Arduino15\packages\arduino\hardware\samd\1.6.17\boards.txt"
+oppure al file
+    "/Users/<tuo nome utente>/Library/Arduino15/packages/arduino/hardware/samd/1.6.17/boards.txt"
 
 ######################################################
-#JFINO (ARDUINO M0 (WITH) BOOTLOADER)
+#JFINO
 jfino.name=jfino
 jfino.vid.0=0x2a03
 jfino.pid.0=0x004d
@@ -33,7 +36,7 @@ jfino.upload.native_usb=true
 jfino.upload.speed=57600
 jfino.build.mcu=cortex-m0plus
 jfino.build.f_cpu=48000000L
-jfino.build.usb_product="Arduino M0"
+jfino.build.usb_product="jfino"
 jfino.build.board=SAM_ZERO
 jfino.build.core=arduino
 jfino.build.extra_flags=-D__SAMD21G18A__ -mthumb {build.usb_flags}
@@ -49,7 +52,7 @@ jfino.bootloader.tool=avrdude
 jfino.bootloader.low_fuses=0xff
 
 ######################################################
-#JFINO-ANCHOR (ARDUINO M0 (WITH) BOOTLOADER)
+#JFINO-ANCHOR (TEMP VERSION)
 jfino-anchor.name=jfino-anchor
 jfino-anchor.vid.0=0x2a03
 jfino-anchor.pid.0=0x004d
@@ -68,7 +71,7 @@ jfino-anchor.upload.native_usb=true
 jfino-anchor.upload.speed=57600
 jfino-anchor.build.mcu=cortex-m0plus
 jfino-anchor.build.f_cpu=48000000L
-jfino-anchor.build.usb_product="Arduino M0"
+jfino-anchor.build.usb_product="jfino-anchor"
 jfino-anchor.build.board=SAM_ZERO
 jfino-anchor.build.core=arduino
 jfino-anchor.build.extra_flags=-D__SAMD21G18A__ -mthumb {build.usb_flags}
