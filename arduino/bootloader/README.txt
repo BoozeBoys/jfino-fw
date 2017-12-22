@@ -18,6 +18,14 @@ SEGGER JLINK BASE                       JFINO JLINK
 
 Tramite il menu "Tools->Device Programming" di Atmel Studio eseguire l'upload del file bootloader.hex
 
+Tramite JLinkExe usare il comando:
+    JLinkExe -device atsamd21g18 -if swd -speed 4000 -autoconnect 1
+ed eseguire l'upload del file nel seguente modo:
+    h
+    erase
+    loadfile resetFUSE.mot
+    loadfile bootloader.hex
+
 
 
 !!! ATTENZIONE !!!
